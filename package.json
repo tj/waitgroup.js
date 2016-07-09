@@ -1,5 +1,5 @@
 {
-  "name": "waitgroup.js",
+  "name": "waitgroup",
   "description": "async/await friendly waitgroup",
   "version": "0.0.1",
   "devDependencies": {

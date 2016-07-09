@@ -16,6 +16,8 @@ module.exports = class WaitGroup {
 
   add(delta = 1) {
     this.n += delta
+    if (this.n < 0) throw new Error('negative WaitGroup counter')
+    this._check()
   }
 
   /**
@@ -24,8 +26,6 @@ module.exports = class WaitGroup {
 
   done() {
     this.add(-1)
-    if (this.n < 0) throw new Error('negative WaitGroup counter')
-    if (this.n == 0) this._done()
   }
 
   /**
@@ -35,7 +35,16 @@ module.exports = class WaitGroup {
   wait() {
     return new Promise((resolve, reject) => {
       this.cbs.push(resolve)
+      this._check()
     })
+  }
+
+  /**
+   * Check counter value.
+   */
+
+  _check() {
+    if (this.n == 0) this._done()
   }
 
   /**

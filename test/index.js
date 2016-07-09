@@ -81,37 +81,53 @@ describe('.wait()', function() {
     })
   })
 
+  it('should resolve immediately when counter == 0', function() {
+    const wg = new WaitGroup
+
+    return co(function *(){
+      yield wg.wait()
+    })
+  })
+
   it('should support subsequent waits', function() {
-    const wg = new WaitGroup(2)
+    const a = new WaitGroup(2)
+    const b = new WaitGroup(1)
     let n = 0
 
     co(function *(){
       n = 1
       yield sleep(10)
-      wg.done()
+      a.done()
 
       n = 2
       yield sleep(10)
-      wg.done()
+      a.done()
 
-      yield sleep(10)
-      wg.add(2)
+      yield b.wait()
 
       n = 3
       yield sleep(10)
-      wg.done()
+      a.done()
 
       n = 4
       yield sleep(10)
-      wg.done()
+      a.done()
     })
 
     return co(function *(){
-      yield wg.wait()
+      yield a.wait() // after 2
       n.should.equal(2)
 
-      yield wg.wait()
-      n.should.equal(4)
+      yield a.wait() // zero
+
+      a.add(2)
+      b.done() // signal continuation
+
+      yield a.wait()
+      n.should.equal(4) // after another 2
+
+      yield a.wait() // zero
+      yield b.wait() // zero
     })
   })
 })

@@ -4,7 +4,6 @@
 // illustrates the usage.
 
 const WaitGroup = require('./index')
-const sleep = require('co-sleep')
 const axios = require('axios')
 const co = require('co')
 
@@ -27,12 +26,6 @@ for (let url of urls) {
     wg.done()
   }).catch(console.error)
 }
-
-co(function*(){
-  console.log('waiting')
-  yield wg.wait()
-  console.log('done waiting')
-}).catch(console.error)
 
 co(function*(){
   console.log('waiting')
